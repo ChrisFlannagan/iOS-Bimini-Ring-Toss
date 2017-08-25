@@ -40,7 +40,6 @@ class Rope {
         geometry.materials.first?.diffuse.contents = UIColor.green
         link = SCNNode(geometry: geometry)
         link.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
-        link.position = SCNVector3(x: 0, y: y, z: 0)
         return link
     }
 }

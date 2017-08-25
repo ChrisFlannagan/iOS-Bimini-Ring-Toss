@@ -40,27 +40,53 @@ class GameViewController: UIViewController {
         scnScene.rootNode.addChildNode(ringObject.getRing())
         
         let ropeObject = Rope()
-        scnScene.rootNode.addChildNode(ropeObject.getHolder())
-        ropeObject.getHolder().addChildNode(ropeObject.getRope())
         
         var cnt:Float = 0.0
         var previousLink: SCNNode = ropeObject.getRope()
-        while cnt < 4 {
+        var links :[SCNNode] = [SCNNode]()
+        while cnt < 0.7 {
             let link = ropeObject.getLink( y: Float(cnt) )
-            ropeObject.getHolder().addChildNode( link )
+            links.append(link)
+            
             let joint = SCNPhysicsBallSocketJoint(
                 bodyA: link.physicsBody!,
-                anchorA: link.position,
+                anchorA: SCNVector3(x: 0, y: -0.05, z: 0),
                 bodyB: previousLink.physicsBody!,
-                anchorB: previousLink.position
+                anchorB: SCNVector3(x: 0, y: 0.05, z: 0)
             )
             scnScene.physicsWorld.addBehavior(joint)
             
             previousLink = link
             cnt += 0.1
         }
- 
-        let floorObject = Floor()
-        scnScene.rootNode.addChildNode(floorObject.getFloor())
+    
+        /** Attach Ring to end of Rope **/
+        let joint = SCNPhysicsBallSocketJoint(
+            bodyA: ringObject.getRing().physicsBody!,
+            anchorA: SCNVector3(x: 0, y: 0.05, z: 0),
+            bodyB: previousLink.physicsBody!,
+            anchorB: SCNVector3(x: 0, y: 0, z: 0)
+        )
+        scnScene.physicsWorld.addBehavior(joint)
+        
+        /** Setup ceiling and floor **/
+        //TODO: Move cieling to a class
+        let ceiling = SCNBox(width: 10, height: 0.1, length: 10, chamferRadius: 0.0)
+        ceiling.firstMaterial?.diffuse.contents = UIColor.blue
+        let ceilingNode = SCNNode(geometry: ceiling)
+        ceilingNode.physicsBody = SCNPhysicsBody(type: .static, shape: SCNPhysicsShape.init(geometry: ceiling, options: nil))
+        ceilingNode.position = SCNVector3(0.0, 2, 0)
+        let anchor = SCNPhysicsBallSocketJoint(bodyA: ringObject.getRing().physicsBody!, anchorA: SCNVector3(0, -0.05, 0), bodyB: ceilingNode.physicsBody!, anchorB: SCNVector3(0, 0.05, 0))
+        scnScene.physicsWorld.addBehavior(anchor)
+        
+        //let floorObject = Floor()
+        //scnScene.rootNode.addChildNode(floorObject.getFloor())
+        
+        scnScene.rootNode.addChildNode(ropeObject.getHolder())
+        ropeObject.getHolder().addChildNode(ceilingNode)
+        ropeObject.getHolder().addChildNode(ropeObject.getRope())
+        links.forEach { link in
+            ropeObject.getHolder().addChildNode( link )
+        }
     }
 }
