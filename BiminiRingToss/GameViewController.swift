@@ -38,26 +38,27 @@ class GameViewController: UIViewController {
     func spawnNodes() {
         let ringObject = Ring()
         scnScene.rootNode.addChildNode(ringObject.getRing())
+        
         let ropeObject = Rope()
-        scnScene.rootNode.addChildNode(ropeObject.getRope())
+        scnScene.rootNode.addChildNode(ropeObject.getHolder())
+        ropeObject.getHolder().addChildNode(ropeObject.getRope())
         
         var cnt:Float = 0.0
         var previousLink: SCNNode = ropeObject.getRope()
-        while cnt < 1.0 {
+        while cnt < 4 {
             let link = ropeObject.getLink( y: Float(cnt) )
-            previousLink.addChildNode( link )
+            ropeObject.getHolder().addChildNode( link )
+            let joint = SCNPhysicsBallSocketJoint(
+                bodyA: link.physicsBody!,
+                anchorA: link.position,
+                bodyB: previousLink.physicsBody!,
+                anchorB: previousLink.position
+            )
+            scnScene.physicsWorld.addBehavior(joint)
             
             previousLink = link
             cnt += 0.1
         }
-        /**
- let pinPosition = connectingRod.convert(pin.position,
- to: scene)
- let pinJoint = SKPhysicsJointPin.joint(withBodyA: pin.physicsBody!,
- bodyB: piston.physicsBody!,
- anchor: pinPosition)
- scene.physicsWorld.add(pinJoint)
- */
  
         let floorObject = Floor()
         scnScene.rootNode.addChildNode(floorObject.getFloor())
