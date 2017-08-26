@@ -23,5 +23,6 @@ class Ring {
         geometry.materials.first?.diffuse.contents = UIColor.blue
         ring = SCNNode(geometry: geometry)
         ring.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
+        ring.physicsBody?.mass = 5.0
     }
 }
