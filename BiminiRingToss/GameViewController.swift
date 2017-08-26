@@ -6,6 +6,7 @@ class GameViewController: UIViewController {
     var scnView: SCNView!
     var scnScene: SCNScene!
     var cameraNode: SCNNode!
+    var theRing: SCNNode!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -14,6 +15,13 @@ class GameViewController: UIViewController {
         setupCamera()
         setupLight()
         spawnNodes()
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if touches.first != nil {
+            theRing.position = SCNVector3(x: 0, y: -3, z: 9)
+        }
+        super.touchesBegan(touches, with: event)
     }
     
     func setupView() {
@@ -45,7 +53,7 @@ class GameViewController: UIViewController {
     }
     
     func spawnNodes() {
-        let ringObject = Ring()
+        theRing = Ring().getRing()
         let ropeObject = Rope()
         
         /** Setup ceiling and floor **/
@@ -76,7 +84,7 @@ class GameViewController: UIViewController {
     
         /** Attach Ring to end of Rope **/
         let joint = SCNPhysicsBallSocketJoint(
-            bodyA: ringObject.getRing().physicsBody!,
+            bodyA: theRing.physicsBody!,
             anchorA: SCNVector3(x: 0.6 , y: 0, z: 0),
             bodyB: previousLink.physicsBody!,
             anchorB: SCNVector3(x: 0.05, y: 0.05, z: 0.05)
@@ -90,7 +98,7 @@ class GameViewController: UIViewController {
         links.forEach { link in
             ropeObject.getHolder().addChildNode( link )
         }
-        scnScene.rootNode.addChildNode(ringObject.getRing())
+        scnScene.rootNode.addChildNode(theRing)
         scnScene.rootNode.addChildNode(floorObject.getFloor())
     }
 }
