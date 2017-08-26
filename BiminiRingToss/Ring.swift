@@ -24,5 +24,10 @@ class Ring {
         ring = SCNNode(geometry: geometry)
         ring.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
         ring.physicsBody?.mass = 5.0
+        ring.physicsBody?.friction = 0.5;
+    }
+    
+    func hold() {
+        ring.position = SCNVector3(x: 0, y: -3, z: 9)
     }
 }

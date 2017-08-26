@@ -33,6 +33,7 @@ class Rope {
         rope = SCNNode(geometry: geometry)
         rope.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
         rope.physicsBody?.mass = 5.0
+        rope.physicsBody?.friction = 0.5;
     }
     
     func getLink( y:Float ) -> SCNNode {
@@ -44,7 +45,8 @@ class Rope {
         
         link = SCNNode(geometry: geometry)
         link.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
-        link.physicsBody?.mass = 3.0
+        link.physicsBody?.mass = 0.1
+        link.physicsBody?.friction = 0;
         return link
     }
 }

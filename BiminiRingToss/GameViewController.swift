@@ -1,15 +1,21 @@
 import UIKit
 import SceneKit
 
-class GameViewController: UIViewController {
+class GameViewController: UIViewController, SCNSceneRendererDelegate {
     
     var scnView: SCNView!
     var scnScene: SCNScene!
     var cameraNode: SCNNode!
     var theRing: SCNNode!
+    var ringObject: Ring!
+    
+    var holdingTouch: Bool!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        holdingTouch = false
+        
+        /** Setup our scene and spawn our nodes **/
         setupView()
         setupScene()
         setupCamera()
@@ -19,16 +25,32 @@ class GameViewController: UIViewController {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if touches.first != nil {
-            theRing.position = SCNVector3(x: 0, y: -3, z: 9)
+            holdingTouch = true
         }
         super.touchesBegan(touches, with: event)
     }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if touches.first != nil {
+            holdingTouch = false
+        }
+        super.touchesBegan(touches, with: event)
+    }
+    
+    func renderer(_ renderer: SCNSceneRenderer,
+                  updateAtTime time: TimeInterval){
+        if ( holdingTouch ) {
+            ringObject.hold()
+        }
+    }
+    
     
     func setupView() {
         scnView = self.view as! SCNView
         scnView.showsStatistics = true
         scnView.allowsCameraControl = true
         scnView.autoenablesDefaultLighting = true
+        scnView.delegate = self
     }
     
     func setupScene() {
@@ -39,8 +61,8 @@ class GameViewController: UIViewController {
     func setupCamera() {
         cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
-        cameraNode.position = SCNVector3(x: 0, y: -3, z: 10)
-        //cameraNode.eulerAngles = SCNVector3(-0.2, 0, 0); if we want to tilt down
+        cameraNode.position = SCNVector3(x: 0, y: -2, z: 12)
+        cameraNode.eulerAngles = SCNVector3(-0.2, 0, 0)
         scnScene.rootNode.addChildNode(cameraNode)
     }
     
@@ -53,7 +75,8 @@ class GameViewController: UIViewController {
     }
     
     func spawnNodes() {
-        theRing = Ring().getRing()
+        ringObject = Ring()
+        theRing = ringObject.getRing()
         let ropeObject = Rope()
         
         /** Setup ceiling and floor **/
@@ -66,7 +89,7 @@ class GameViewController: UIViewController {
         var cnt:Float = 0.0
         var previousLink: SCNNode = ropeObject.getRope()
         var links :[SCNNode] = [SCNNode]()
-        while cnt < 2.0 {
+        while cnt < 4.0 {
             let link = ropeObject.getLink( y: Float(cnt) )
             links.append(link)
             
