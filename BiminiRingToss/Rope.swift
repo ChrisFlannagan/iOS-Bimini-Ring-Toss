@@ -13,6 +13,7 @@ class Rope {
     
     var holder: SCNNode
     var rope: SCNNode
+    var links :[SCNNode] = [SCNNode]()
     
     func getHolder() -> SCNNode {
         return holder
@@ -48,5 +49,9 @@ class Rope {
         link.physicsBody?.mass = 0.1
         link.physicsBody?.friction = 0;
         return link
+    }
+    
+    func clampLinks() {
+        
     }
 }

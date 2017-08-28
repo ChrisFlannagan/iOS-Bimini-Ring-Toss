@@ -8,6 +8,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
     var cameraNode: SCNNode!
     var theRing: SCNNode!
     var ringObject: Ring!
+    var ropeObject: Rope!
     
     var holdingTouch: Bool!
     
@@ -42,6 +43,10 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         if ( holdingTouch ) {
             ringObject.hold()
         }
+        
+        ropeObject.links.forEach { link in
+            ropeObject.getHolder().addChildNode( link )
+        }
     }
     
     
@@ -62,7 +67,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
         cameraNode.position = SCNVector3(x: 0, y: -2, z: 12)
-        cameraNode.eulerAngles = SCNVector3(-0.2, 0, 0)
+        cameraNode.eulerAngles = SCNVector3(-0.3, 0, 0)
         scnScene.rootNode.addChildNode(cameraNode)
     }
     
@@ -77,7 +82,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
     func spawnNodes() {
         ringObject = Ring()
         theRing = ringObject.getRing()
-        let ropeObject = Rope()
+        ropeObject = Rope()
         
         /** Setup ceiling and floor **/
         let ceilingObject = Ceiling()
@@ -88,10 +93,9 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         /** Generate our rope links **/
         var cnt:Float = 0.0
         var previousLink: SCNNode = ropeObject.getRope()
-        var links :[SCNNode] = [SCNNode]()
-        while cnt < 4.0 {
+        while cnt < 3.0 {
             let link = ropeObject.getLink( y: Float(cnt) )
-            links.append(link)
+            ropeObject.links.append(link)
             
             let joint = SCNPhysicsBallSocketJoint(
                 bodyA: link.physicsBody!,
@@ -118,7 +122,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         scnScene.rootNode.addChildNode(ropeObject.getHolder())
         ropeObject.getHolder().addChildNode(ceilingObject.getCeiling())
         ropeObject.getHolder().addChildNode(ropeObject.getRope())
-        links.forEach { link in
+        ropeObject.links.forEach { link in
             ropeObject.getHolder().addChildNode( link )
         }
         scnScene.rootNode.addChildNode(theRing)
