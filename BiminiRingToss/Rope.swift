@@ -34,7 +34,6 @@ class Rope {
         rope = SCNNode(geometry: geometry)
         rope.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
         rope.physicsBody?.mass = 5.0
-        rope.physicsBody?.friction = 0.5;
     }
     
     func getLink( y:Float ) -> SCNNode {
@@ -46,12 +45,25 @@ class Rope {
         
         link = SCNNode(geometry: geometry)
         link.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
-        link.physicsBody?.mass = 0.1
-        link.physicsBody?.friction = 0;
+        link.physicsBody?.mass = 1.0
         return link
     }
     
     func clampLinks() {
-        
+        var previousLink: SCNNode = rope
+        links.forEach { link in
+            let origPos: SCNVector3 = previousLink.position
+            let newPos: SCNVector3 = link.position
+            var dist = (newPos.x - origPos.x) * (newPos.x - origPos.x) + (newPos.y - origPos.y) * (newPos.y - origPos.y) + (newPos.z - origPos.z) * (newPos.z - origPos.z)
+            dist = dist.squareRoot()
+            let midPoint = SCNVector3Make((newPos.x + origPos.x)/2, (newPos.y + origPos.y)/2, (newPos.z + origPos.z)/2)
+            
+            if ( dist > 0.1 ) {
+                print(dist)
+                link.position = midPoint
+            }
+            previousLink = link
+        }
+
     }
 }

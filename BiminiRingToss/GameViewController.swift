@@ -44,9 +44,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
             ringObject.hold()
         }
         
-        ropeObject.links.forEach { link in
-            ropeObject.getHolder().addChildNode( link )
-        }
+        ropeObject.clampLinks()
     }
     
     
@@ -93,7 +91,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         /** Generate our rope links **/
         var cnt:Float = 0.0
         var previousLink: SCNNode = ropeObject.getRope()
-        while cnt < 3.0 {
+        while cnt < 2.0 {
             let link = ropeObject.getLink( y: Float(cnt) )
             ropeObject.links.append(link)
             
